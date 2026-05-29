@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEGION — Forge your strength.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0708;
+    --bg2:#150a0c;
+    --crimson:#7c1420;
+    --crimson-lo:#5a0e18;
+    --crimson-glow:rgba(168,30,44,.4);
+    --gold:#d4af37;
+    --gold-lo:#9c7d24;
+    --gold-soft:#e8d28f;
+    --ink:#f3e9da;
+    --muted:#9b8a82;
+    --line:rgba(212,175,55,.16);
+    --card:rgba(212,175,55,.04);
+    --marble:#f3e9da;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Outfit',system-ui,sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--gold);color:#0c0708}
+
+  /* grain + vignette */
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+
+  .laurel{color:var(--gold);opacity:.85}
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 28px;
+    backdrop-filter:blur(12px);
+    background:linear-gradient(to bottom,rgba(12,7,8,.9),rgba(12,7,8,0));
+    border-bottom:1px solid transparent;transition:border-color .3s,background .3s;
+  }
+  nav.scrolled{border-bottom:1px solid var(--line);background:rgba(12,7,8,.95)}
+  .logo{font-family:'Cinzel',serif;font-weight:900;font-size:23px;letter-spacing:3px;display:flex;align-items:center;gap:10px;color:var(--ink)}
+  .logo .crest{width:30px;height:30px;display:flex;align-items:center;justify-content:center}
+  .logo .crest svg{width:30px;height:30px}
+  .nav-links{display:flex;gap:34px;align-items:center}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;letter-spacing:.5px;transition:color .2s}
+  .nav-links a:hover{color:var(--gold)}
+  .nav-cta{background:linear-gradient(135deg,var(--crimson),var(--crimson-lo));color:var(--gold-soft)!important;
+    padding:10px 22px;border-radius:4px;font-weight:600!important;border:1px solid var(--gold-lo);
+    box-shadow:0 0 18px var(--crimson-glow)}
+  .nav-cta:hover{background:var(--gold);color:#0c0708!important;border-color:var(--gold)}
+  @media(max-width:760px){.nav-links a:not(.nav-cta){display:none}}
+
+  /* HERO */
+  .hero{position:relative;padding:165px 0 80px;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(ellipse at 75% 25%,var(--crimson-glow),transparent 55%),
+      radial-gradient(ellipse at 10% 80%,rgba(124,20,32,.25),transparent 50%);
+  }
+  /* faint greek key border at very top */
+  .hero-key{position:absolute;top:0;left:0;right:0;height:14px;z-index:1;opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='14'%3E%3Cpath d='M2 12h10V4h-8V2h14v10h-2V6h-2v8H2z' fill='none' stroke='%23d4af37' stroke-width='1'/%3E%3C/svg%3E")}
+  .hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.12fr .88fr;gap:40px;align-items:center}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr;text-align:center}}
+
+  .tagpill{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);
+    padding:7px 16px;border-radius:100px;font-size:12.5px;color:var(--muted);
+    letter-spacing:.5px;margin-bottom:28px;background:var(--card)}
+  .tagpill b{color:var(--gold);font-weight:600}
+
+  h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(48px,7.5vw,96px);
+    line-height:.98;letter-spacing:1px;text-transform:uppercase}
+  h1 .gold{background:linear-gradient(135deg,var(--gold-soft),var(--gold),var(--gold-lo));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero .scriptline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:24px;color:var(--gold-soft);margin-top:14px;font-weight:400}
+  .hero p.sub{color:var(--muted);font-size:18px;line-height:1.65;max-width:450px;margin:24px 0 36px}
+  @media(max-width:900px){.hero p.sub{margin-left:auto;margin-right:auto}}
+
+  .store-btns{display:flex;gap:14px;flex-wrap:wrap}
+  @media(max-width:900px){.store-btns{justify-content:center}}
+  .store{display:flex;align-items:center;gap:11px;
+    background:linear-gradient(135deg,#1c1012,#120a0b);color:var(--ink);
+    padding:13px 22px;border-radius:6px;text-decoration:none;border:1px solid var(--gold-lo);
+    transition:transform .2s,border-color .2s,box-shadow .2s}
+  .store:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 8px 30px rgba(212,175,55,.18)}
+  .store svg{width:24px;height:24px;color:var(--gold)}
+  .store .t{display:flex;flex-direction:column;line-height:1.1;text-align:left}
+  .store .t small{font-size:10px;color:var(--muted)}
+  .store .t span{font-size:16px;font-weight:600}
+
+  .hero-stats{display:flex;gap:38px;margin-top:48px}
+  @media(max-width:900px){.hero-stats{justify-content:center}}
+  .hero-stats .s b{font-family:'Cinzel',serif;font-weight:700;font-size:30px;display:block;color:var(--gold)}
+  .hero-stats .s small{color:var(--muted);font-size:12.5px;letter-spacing:.5px}
+  .hero-stats .div{width:1px;background:var(--line)}
+
+  /* PHONE */
+  .phone-stage{position:relative;display:flex;justify-content:center;perspective:1300px}
+  .phone{position:relative;width:300px;height:612px;border-radius:42px;
+    background:linear-gradient(160deg,#241417,#0f0809);
+    border:1px solid var(--gold-lo);padding:11px;
+    box-shadow:0 40px 90px rgba(0,0,0,.7),0 0 40px rgba(124,20,32,.25);
+    transform:rotateY(-14deg) rotateX(5deg)}
+  .phone .notch{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:110px;height:26px;background:#000;border-radius:100px;z-index:5}
+  .screen{width:100%;height:100%;border-radius:32px;background:linear-gradient(180deg,#160c0e,#0d0708);overflow:hidden;position:relative;display:flex;flex-direction:column}
+
+  .app-top{padding:44px 20px 14px;display:flex;justify-content:space-between;align-items:center}
+  .app-top .nm{font-family:'Cinzel',serif;font-weight:700;font-size:13px;letter-spacing:2px;color:var(--gold)}
+  .app-top .lvlchip{display:flex;align-items:center;gap:7px;background:rgba(212,175,55,.1);border:1px solid var(--line);border-radius:100px;padding:5px 11px}
+  .app-top .lvlchip .em{font-size:13px}
+  .app-top .lvlchip b{font-size:12px;color:var(--gold-soft)}
+
+  /* XP card */
+  .xp-card{margin:6px 20px 4px;background:linear-gradient(145deg,rgba(124,20,32,.35),rgba(212,175,55,.05));
+    border:1px solid var(--line);border-radius:20px;padding:18px}
+  .xp-card .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px}
+  .xp-card .lvl{font-family:'Cinzel',serif;font-weight:900;font-size:30px;color:var(--gold);line-height:1}
+  .xp-card .lvl small{font-size:11px;color:var(--muted);font-family:'Outfit';font-weight:400;display:block;letter-spacing:1px}
+  .xp-card .pts{font-size:12px;color:var(--gold-soft)}
+  .xp-bar{height:9px;border-radius:100px;background:rgba(255,255,255,.08);overflow:hidden}
+  .xp-bar i{display:block;height:100%;width:68%;border-radius:100px;background:linear-gradient(90deg,var(--gold-lo),var(--gold-soft))}
+  .xp-card .next{font-size:10.5px;color:var(--muted);margin-top:7px}
+
+  .sec-title{padding:16px 20px 8px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+  .prog{margin:0 20px 9px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px;display:flex;align-items:center;gap:12px}
+  .prog .ic{width:40px;height:40px;border-radius:11px;background:rgba(124,20,32,.3);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:18px}
+  .prog .info{flex:1}
+  .prog .info b{font-size:13.5px;display:block}
+  .prog .info small{font-size:11px;color:var(--muted)}
+  .prog .go{color:var(--gold);font-size:17px}
+  .prog.premium{background:linear-gradient(135deg,rgba(212,175,55,.16),rgba(124,20,32,.12));border-color:var(--gold-lo)}
+  .prog.premium .tag{font-size:9px;background:var(--gold);color:#0c0708;padding:2px 7px;border-radius:100px;font-weight:700;letter-spacing:.5px}
+
+  /* floating badges */
+  .float-badge{position:absolute;background:linear-gradient(145deg,#1d1013,#120a0b);border:1px solid var(--gold-lo);
+    border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:11px;
+    box-shadow:0 18px 44px rgba(0,0,0,.6);z-index:6}
+  .float-badge .em{width:34px;height:34px;border-radius:9px;background:rgba(212,175,55,.14);display:flex;align-items:center;justify-content:center;font-size:17px}
+  .float-badge b{font-size:13px;display:block;color:var(--gold-soft)}
+  .float-badge small{font-size:10.5px;color:var(--muted)}
+  .fb1{top:54px;left:-34px;animation:floaty 4.5s ease-in-out infinite}
+  .fb2{bottom:96px;right:-30px;animation:floaty 4.5s ease-in-out infinite 1s}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+  @media(max-width:520px){.fb1{left:-8px}.fb2{right:-8px}}
+
+  /* MARQUEE */
+  .marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:20px 0;overflow:hidden;white-space:nowrap;margin-top:36px;background:var(--bg2)}
+  .marquee-track{display:inline-block;animation:scroll 28s linear infinite}
+  .marquee span{font-family:'Cinzel',serif;font-weight:700;font-size:26px;text-transform:uppercase;letter-spacing:2px;margin:0 22px;color:var(--muted)}
+  .marquee span .d{color:var(--gold);margin-left:44px}
+  @keyframes scroll{to{transform:translateX(-50%)}}
+
+  /* SECTIONS */
+  section.blk{padding:108px 0;position:relative}
+  .eyebrow{color:var(--gold);font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:18px}
+  .h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(34px,5vw,60px);line-height:1.04;text-transform:uppercase;letter-spacing:.5px}
+  .h2 .gold{color:var(--gold)}
+  .lead{color:var(--muted);font-size:17px;line-height:1.65;max-width:560px;margin-top:20px;font-weight:300}
+
+  /* STANDOUT FEATURES — big alternating rows */
+  .bigfeat{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-top:70px}
+  .bigfeat:nth-child(even) .bf-visual{order:-1}
+  @media(max-width:880px){.bigfeat{grid-template-columns:1fr;gap:36px}.bigfeat .bf-visual{order:-1!important}}
+  .bf-num{font-family:'Cinzel',serif;font-weight:900;font-size:15px;color:var(--gold-lo);letter-spacing:2px;margin-bottom:14px}
+  .bigfeat h3{font-family:'Cinzel',serif;font-weight:700;font-size:30px;line-height:1.15;margin-bottom:16px}
+  .bigfeat p{color:var(--muted);font-size:16px;line-height:1.7;font-weight:300}
+  .bf-visual{background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);
+    border-radius:24px;min-height:340px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:32px}
+  .bf-visual .vglow{position:absolute;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,var(--crimson-glow),transparent 65%);filter:blur(12px)}
+
+  /* XP visual */
+  .xp-demo{position:relative;z-index:1;width:100%;max-width:280px}
+  .xp-demo .lv-big{font-family:'Cinzel',serif;font-weight:900;font-size:64px;color:var(--gold);text-align:center;line-height:1}
+  .xp-demo .lv-lbl{text-align:center;font-size:12px;letter-spacing:3px;color:var(--muted);margin-bottom:20px}
+  .xp-demo .track{height:12px;border-radius:100px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:8px}
+  .xp-demo .track i{display:block;height:100%;width:72%;background:linear-gradient(90deg,var(--gold-lo),var(--gold-soft));border-radius:100px;animation:fill 1.6s cubic-bezier(.16,1,.3,1) both}
+  @keyframes fill{from{width:0}}
+  .xp-demo .reward{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+  .xp-demo .pillrow{display:flex;gap:8px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+  .xp-demo .pillrow span{font-size:11px;background:rgba(212,175,55,.1);border:1px solid var(--line);padding:5px 11px;border-radius:100px;color:var(--gold-soft)}
+
+  /* route visual */
+  .route-demo{position:relative;z-index:1;width:100%;height:280px}
+  .route-demo svg{width:100%;height:100%}
+  .route-line{stroke:var(--gold);stroke-width:3;fill:none;stroke-linecap:round;stroke-dasharray:600;stroke-dashoffset:600;animation:draw 2.4s ease forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .route-pin{fill:var(--crimson);stroke:var(--gold);stroke-width:2}
+  .route-badge{position:absolute;top:14px;right:14px;background:rgba(12,7,8,.85);border:1px solid var(--gold-lo);border-radius:10px;padding:8px 12px;font-size:11px}
+  .route-badge b{color:var(--gold);font-family:'Cinzel'}
+
+  /* photo compare visual */
+  .compare-demo{position:relative;z-index:1;display:flex;gap:10px;width:100%;max-width:300px}
+  .compare-demo .ph{flex:1;border-radius:14px;border:1px solid var(--line);overflow:hidden;position:relative;aspect-ratio:3/4}
+  .compare-demo .ph .fig{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:60px;opacity:.5}
+  .compare-demo .ph .lbl{position:absolute;left:0;right:0;bottom:0;padding:8px 10px;font-size:11px;background:linear-gradient(to top,rgba(0,0,0,.85),transparent)}
+  .compare-demo .ph .lbl b{display:block;color:var(--gold-soft);font-family:'Cinzel';font-size:13px}
+  .compare-demo .ph.a{background:linear-gradient(160deg,rgba(124,20,32,.3),transparent)}
+  .compare-demo .ph.b{background:linear-gradient(160deg,rgba(212,175,55,.18),transparent)}
+  .compare-vs{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Cinzel';font-weight:900;font-size:20px;color:var(--gold);background:var(--bg);border:1px solid var(--gold-lo);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:2}
+
+  /* GRID FEATURES (the rest) */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:60px}
+  @media(max-width:880px){.feat-grid{grid-template-columns:1fr}}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px;
+    transition:transform .3s,border-color .3s,background .3s}
+  .feat:hover{transform:translateY(-6px);border-color:var(--gold-lo);background:rgba(212,175,55,.06)}
+  .feat .ic{width:52px;height:52px;border-radius:13px;background:rgba(124,20,32,.28);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px}
+  .feat h4{font-family:'Cinzel',serif;font-weight:600;font-size:18px;margin-bottom:10px}
+  .feat p{color:var(--muted);font-size:14.5px;line-height:1.6;font-weight:300}
+
+  /* PROGRAMS STRIP */
+  .prog-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px}
+  @media(max-width:880px){.prog-strip{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.prog-strip{grid-template-columns:1fr}}
+  .pcard{background:linear-gradient(160deg,var(--bg2),var(--bg));border:1px solid var(--line);border-radius:16px;padding:26px;position:relative;overflow:hidden;transition:border-color .3s}
+  .pcard:hover{border-color:var(--gold-lo)}
+  .pcard .em{font-size:30px;margin-bottom:16px}
+  .pcard h4{font-family:'Cinzel';font-weight:600;font-size:17px;margin-bottom:7px}
+  .pcard p{color:var(--muted);font-size:13.5px;font-weight:300;line-height:1.55}
+  .pcard.gold{background:linear-gradient(160deg,rgba(212,175,55,.14),rgba(124,20,32,.1));border-color:var(--gold-lo)}
+  .pcard .crown{position:absolute;top:18px;right:18px;font-size:9px;background:var(--gold);color:#0c0708;padding:3px 9px;border-radius:100px;font-weight:700;letter-spacing:.5px;font-family:'Outfit'}
+
+  /* CTA */
+  .cta-band{margin:0 28px 108px;max-width:1184px;margin-left:auto;margin-right:auto;
+    background:linear-gradient(135deg,var(--crimson),var(--crimson-lo));border-radius:28px;
+    padding:78px 50px;text-align:center;position:relative;overflow:hidden;
+    border:1px solid var(--gold-lo)}
+  .cta-band::before{content:"";position:absolute;inset:0;opacity:.4;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='14'%3E%3Cpath d='M2 12h10V4h-8V2h14v10h-2V6h-2v8H2z' fill='none' stroke='%23d4af37' stroke-width='1'/%3E%3C/svg%3E");
+    background-repeat:repeat-x;background-position:top}
+  .cta-band .vg{position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.2),transparent 60%);top:-30%;left:50%;transform:translateX(-50%)}
+  .cta-band>*{position:relative;z-index:1}
+  .cta-band .eyebrow{color:var(--gold-soft)}
+  .cta-band h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(36px,5.5vw,68px);text-transform:uppercase;line-height:1;letter-spacing:1px;color:var(--ink)}
+  .cta-band p{font-size:17px;margin:20px auto 36px;max-width:460px;color:var(--gold-soft);font-weight:300}
+  .cta-band .store{background:#0c0708;border-color:var(--gold)}
+  .cta-band .store-btns{justify-content:center}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line);padding:60px 0 40px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+  @media(max-width:760px){.foot-grid{grid-template-columns:1fr 1fr}}
+  footer .logo{margin-bottom:16px}
+  footer p.bl{color:var(--muted);font-size:14px;line-height:1.65;max-width:280px;font-weight:300}
+  .foot-col h5{font-family:'Cinzel';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+  .foot-col a{display:block;color:var(--ink);text-decoration:none;font-size:14.5px;margin-bottom:11px;font-weight:300;transition:color .2s}
+  .foot-col a:hover{color:var(--gold)}
+  .foot-bottom{border-top:1px solid var(--line);margin-top:50px;padding-top:28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:13px;font-weight:300}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(34px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="logo">
+    <span class="crest">
+      <svg viewBox="0 0 32 32" fill="none"><path d="M16 2l11 4v8c0 7-4.5 12-11 16C9.5 26 5 21 5 14V6l11-4z" stroke="#d4af37" stroke-width="1.5" fill="rgba(124,20,32,.4)"/><path d="M16 9v10M11 13l5-2 5 2" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </span>
+    LEGION
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#programs">Programs</a>
+    <a href="#more">More</a>
+    <a href="#download" class="nav-cta">Get the App</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-key"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="tagpill reveal">⚔️ <b>Level up</b> &nbsp;·&nbsp; Earn XP every workout</span>
+      <h1 class="reveal d1">Forge your<br><span class="gold">strength.</span></h1>
+      <div class="scriptline reveal d1">Train like a legend. Rise through the ranks.</div>
+      <p class="sub reveal d2">Legion turns your training into a journey. Follow guided programs, earn experience for every workout and step, and watch yourself level up — set after set, day after day.</p>
+      <div class="store-btns reveal d3">
+        <a href="#download" class="store">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-2.6 2.13-3.85 2.22-3.91-1.21-1.77-3.09-2.01-3.76-2.04-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.89-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.79 1.3 10.34.86 1.25 1.89 2.65 3.23 2.6 1.3-.05 1.79-.84 3.36-.84 1.57 0 2.01.84 3.39.81 1.4-.02 2.28-1.27 3.13-2.53.99-1.45 1.4-2.86 1.42-2.93-.03-.01-2.72-1.04-2.75-4.13zM14.6 4.62c.71-.87 1.19-2.07 1.06-3.27-1.03.04-2.27.68-3.01 1.54-.66.76-1.24 1.99-1.08 3.16 1.15.09 2.32-.58 3.03-1.43z"/></svg>
+          <div class="t"><small>Download on the</small><span>App Store</span></div>
+        </a>
+        <a href="#download" class="store">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.6 2.3c-.3.3-.4.7-.4 1.3v16.8c0 .6.1 1 .4 1.3l.1.1L13 12.6v-.2L3.7 2.2l-.1.1zM16.4 15.9l-3.1-3.1v-.2l3.1-3.1.1.1 3.7 2.1c1.1.6 1.1 1.6 0 2.2l-3.7 2.1-.1-.2zM13.3 12.5L4 21.8c.4.4 1 .4 1.7.1l11-6.3-3.4-3.1zM4 2.2l9.3 9.3 3.4-3.1L5.7 2.1C5 1.7 4.4 1.8 4 2.2z"/></svg>
+          <div class="t"><small>Get it on</small><span>Google Play</span></div>
+        </a>
+      </div>
+      <div class="hero-stats reveal d3">
+        <div class="s"><b>103+</b><small>Exercises</small></div>
+        <div class="div"></div>
+        <div class="s"><b>6</b><small>Training programs</small></div>
+        <div class="div"></div>
+        <div class="s"><b>∞</b><small>Custom routines</small></div>
+      </div>
+    </div>
+
+    <div class="phone-stage reveal d2">
+      <div class="float-badge fb1">
+        <div class="em">🏆</div>
+        <div><b>Achievement</b><small>7-day streak unlocked</small></div>
+      </div>
+      <div class="float-badge fb2">
+        <div class="em">⚡</div>
+        <div><b>+150 XP</b><small>Workout complete</small></div>
+      </div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="app-top">
+            <div class="nm">LEGION</div>
+            <div class="lvlchip"><span class="em">🔥</span><b>12-day streak</b></div>
+          </div>
+          <div class="xp-card">
+            <div class="row">
+              <div class="lvl">14<small>LEGIONNAIRE</small></div>
+              <div class="pts">2,340 / 3,000 XP</div>
+            </div>
+            <div class="xp-bar"><i></i></div>
+            <div class="next">660 XP until Level 15 · Centurion</div>
+          </div>
+          <div class="sec-title">Your Programs</div>
+          <div class="prog">
+            <div class="ic">🏛️</div>
+            <div class="info"><b>Bodyweight · Path I</b><small>Day 3 of 5 · Push</small></div>
+            <div class="go">›</div>
+          </div>
+          <div class="prog">
+            <div class="ic">🏋️</div>
+            <div class="info"><b>Dumbbell Strength</b><small>Day 1 of 5 · Legs</small></div>
+            <div class="go">›</div>
+          </div>
+          <div class="prog premium">
+            <div class="ic">👑</div>
+            <div class="info"><b>The Emperor's Plan</b><span class="tag">PREMIUM</span><small>Coached by your trainer</small></div>
+            <div class="go">›</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>STRENGTH<span class="d">✦</span></span><span>DISCIPLINE<span class="d">✦</span></span><span>PROGRESS<span class="d">✦</span></span><span>GLORY<span class="d">✦</span></span><span>HONOR<span class="d">✦</span></span>
+    <span>STRENGTH<span class="d">✦</span></span><span>DISCIPLINE<span class="d">✦</span></span><span>PROGRESS<span class="d">✦</span></span><span>GLORY<span class="d">✦</span></span><span>HONOR<span class="d">✦</span></span>
+  </div>
+</div>
+
+<!-- STANDOUT FEATURES -->
+<section class="blk" id="features">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">What sets Legion apart</div>
+      <div class="h2">Not just a tracker.<br>A <span class="gold">campaign.</span></div>
+      <p class="lead">Most fitness apps log your sets and stop there. Legion makes every workout count toward something bigger.</p>
+    </div>
+
+    <!-- XP -->
+    <div class="bigfeat reveal">
+      <div class="bf-text">
+        <div class="bf-num">⚔️ THE XP SYSTEM</div>
+        <h3>Every rep earns its glory.</h3>
+        <p>Complete a workout or hit your step goal and earn experience. Level up, climb the ranks, and turn consistency into a game you actually want to keep playing. Your progress isn't just measured — it's rewarded.</p>
+      </div>
+      <div class="bf-visual">
+        <div class="vglow"></div>
+        <div class="xp-demo">
+          <div class="lv-big">14</div>
+          <div class="lv-lbl">LEGIONNAIRE</div>
+          <div class="track"><i></i></div>
+          <div class="reward"><span>2,340 XP</span><span>Level 15</span></div>
+          <div class="pillrow"><span>+50 Workout</span><span>+30 Steps</span><span>+100 PR</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROUTES -->
+    <div class="bigfeat reveal">
+      <div class="bf-text">
+        <div class="bf-num">🗺️ OUTDOOR RUNS & ROUTES</div>
+        <h3>Map it. Run it. Beat it.</h3>
+        <p>Time your outdoor runs and build your own routes — drop pins or draw your path freehand. Every route remembers your best time, so each run becomes a chance to conquer your former self.</p>
+      </div>
+      <div class="bf-visual">
+        <div class="vglow"></div>
+        <div class="route-demo">
+          <div class="route-badge">Best: <b>24:18</b></div>
+          <svg viewBox="0 0 300 280" fill="none">
+            <path class="route-line" d="M40 230 C 60 160, 120 180, 130 120 S 200 80, 230 110 S 250 180, 200 200 S 120 220, 90 180"/>
+            <circle class="route-pin" cx="40" cy="230" r="7"/>
+            <circle class="route-pin" cx="200" cy="200" r="7"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHOTO COMPARE -->
+    <div class="bigfeat reveal">
+      <div class="bf-text">
+        <div class="bf-num">📸 PROGRESS PHOTOS</div>
+        <h3>See how far you've come.</h3>
+        <p>Snap progress photos right in the app and place two side by side — your starting point against today. Legion stitches them into a single shareable image with your weight journey, ready to inspire your friends.</p>
+      </div>
+      <div class="bf-visual">
+        <div class="vglow"></div>
+        <div class="compare-demo">
+          <div class="ph a"><div class="fig">🧍</div><div class="lbl"><b>96.2 kg</b><span>Day 1</span></div></div>
+          <div class="compare-vs">VS</div>
+          <div class="ph b"><div class="fig">🏃</div><div class="lbl"><b>78.5 kg</b><span>Today</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS -->
+<section class="blk" id="programs" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">Choose your path</div>
+      <div class="h2">Programs for <span class="gold">every legionnaire.</span></div>
+      <p class="lead">Whether you train with nothing but your bodyweight or a pair of dumbbells, there's a guided path built for you — with more being added all the time.</p>
+    </div>
+    <div class="prog-strip">
+      <div class="pcard reveal d1"><div class="em">🏛️</div><h4>Bodyweight Paths</h4><p>Structured programs that need zero equipment. Train anywhere, anytime.</p></div>
+      <div class="pcard reveal d2"><div class="em">🏋️</div><h4>Dumbbell Paths</h4><p>Build serious strength with guided dumbbell-based progressions.</p></div>
+      <div class="pcard reveal d3"><div class="em">⚙️</div><h4>Custom Programs</h4><p>Design your own routine from 103+ exercises and train your way.</p></div>
+      <div class="pcard gold reveal d1"><div class="crown">PREMIUM</div><div class="em">👑</div><h4>The Emperor's Plan</h4><p>A program built specifically for you by a real personal trainer.</p></div>
+      <div class="pcard reveal d2"><div class="em">📚</div><h4>103+ Exercises</h4><p>A growing library covering every movement your training needs.</p></div>
+      <div class="pcard reveal d3"><div class="em">➕</div><h4>Always Growing</h4><p>New programs and exercises added regularly — your arsenal keeps expanding.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- MORE FEATURES -->
+<section class="blk" id="more">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">The full arsenal</div>
+      <div class="h2">Everything you need<br>to <span class="gold">stay the course.</span></div>
+    </div>
+    <div class="feat-grid">
+      <div class="feat reveal d1">
+        <div class="ic">🏆</div>
+        <h4>Achievements</h4>
+        <p>Unlock badges and milestones as you train. Every accomplishment is recognized and celebrated.</p>
+      </div>
+      <div class="feat reveal d2">
+        <div class="ic">👣</div>
+        <h4>Step Tracking</h4>
+        <p>Health Connect integration counts your daily steps and rewards them with experience automatically.</p>
+      </div>
+      <div class="feat reveal d3">
+        <div class="ic">📅</div>
+        <h4>Progress Calendar</h4>
+        <p>See every program, route, step count, and weight logged — your whole journey in one clear view.</p>
+      </div>
+      <div class="feat reveal d1">
+        <div class="ic">📉</div>
+        <h4>Weight Log & Graph</h4>
+        <p>Track your weight over time with a visual graph that shows exactly how far you've come from day one.</p>
+      </div>
+      <div class="feat reveal d2">
+        <div class="ic">⚙️</div>
+        <h4>Custom Routines</h4>
+        <p>Build your own programs from scratch, choosing the exercises and structure that fit your goals.</p>
+      </div>
+      <div class="feat reveal d3">
+        <div class="ic">🤝</div>
+        <h4>Share Your Wins</h4>
+        <p>Turn your progress into shareable images and bring your friends along on the journey.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-band reveal" id="download">
+  <div class="vg"></div>
+  <div class="eyebrow">Your campaign begins now</div>
+  <h2>Join the Legion.</h2>
+  <p>Download free and start your first program today. Earn your first XP before you even break a sweat.</p>
+  <div class="store-btns">
+    <a href="#" class="store">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-2.6 2.13-3.85 2.22-3.91-1.21-1.77-3.09-2.01-3.76-2.04-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.89-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.79 1.3 10.34.86 1.25 1.89 2.65 3.23 2.6 1.3-.05 1.79-.84 3.36-.84 1.57 0 2.01.84 3.39.81 1.4-.02 2.28-1.27 3.13-2.53.99-1.45 1.4-2.86 1.42-2.93-.03-.01-2.72-1.04-2.75-4.13zM14.6 4.62c.71-.87 1.19-2.07 1.06-3.27-1.03.04-2.27.68-3.01 1.54-.66.76-1.24 1.99-1.08 3.16 1.15.09 2.32-.58 3.03-1.43z"/></svg>
+      <div class="t"><small>Download on the</small><span>App Store</span></div>
+    </a>
+    <a href="#" class="store">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.6 2.3c-.3.3-.4.7-.4 1.3v16.8c0 .6.1 1 .4 1.3l.1.1L13 12.6v-.2L3.7 2.2l-.1.1zM16.4 15.9l-3.1-3.1v-.2l3.1-3.1.1.1 3.7 2.1c1.1.6 1.1 1.6 0 2.2l-3.7 2.1-.1-.2zM13.3 12.5L4 21.8c.4.4 1 .4 1.7.1l11-6.3-3.4-3.1zM4 2.2l9.3 9.3 3.4-3.1L5.7 2.1C5 1.7 4.4 1.8 4 2.2z"/></svg>
+      <div class="t"><small>Get it on</small><span>Google Play</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo">
+          <span class="crest"><svg viewBox="0 0 32 32" fill="none"><path d="M16 2l11 4v8c0 7-4.5 12-11 16C9.5 26 5 21 5 14V6l11-4z" stroke="#d4af37" stroke-width="1.5" fill="rgba(124,20,32,.4)"/><path d="M16 9v10M11 13l5-2 5 2" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          LEGION
+        </div>
+        <p class="bl">The training app that turns discipline into glory. Earn your strength, one workout at a time.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Product</h5>
+        <a href="#features">Features</a>
+        <a href="#programs">Programs</a>
+        <a href="#more">Arsenal</a>
+        <a href="#download">Download</a>
+      </div>
+      <div class="foot-col">
+        <h5>Legion</h5>
+        <a href="#">About</a>
+        <a href="#">Premium</a>
+        <a href="#">Trainers</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="foot-col">
+        <h5>Legal</h5>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Support</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Legion Fitness. All rights reserved.</span>
+      <span>Strength through discipline.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav=document.getElementById('nav');
+  addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>20));
+
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  addEventListener('load',()=>{
+    document.querySelectorAll('.hero .reveal').forEach(el=>el.classList.add('in'));
+  });
+</script>
+</body>
+</html>
